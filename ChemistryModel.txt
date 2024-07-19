@@ -1,0 +1,164 @@
+# Chemistry model
+# Whole nucleus irradiation
+# Backbone, bases, no hydration shell
+# Physics (17.5 eV) and Chemistry (0.4 prob)
+# Scavenging - histones and 1 ns timecut
+
+# === General ===
+i:Ts/NumberOfThreads 			= 10
+Ts/ShowHistoryCountAtInterval           = 1
+i:Ts/Seed = 1
+
+# === Geometry ===
+# World
+d:Ge/World/HLX                        	= 7.0 um
+d:Ge/World/HLY                          = 7.0 um
+d:Ge/World/HLZ                          = 7.0 um
+b:Ge/World/Invisible                    = "true"
+s:Ge/World/Material                     = "G4_WATER"
+
+# === Nucleus ===
+s:Ge/Nuc/Type                       = "TsNucleus"
+s:Ge/Nuc/Parent                     = "World"
+s:Ge/Nuc/Material                   = "G4_WATER"
+d:Ge/Nuc/NucleusRadius              = 4.65 um
+i:Ge/Nuc/HilbertCurveLayer          = 4
+i:Ge/Nuc/HilbertCurve3DRepeat       = 30
+s:Ge/Nuc/HilbertCurveFileName       = "../../supportFiles/HilbertPoints_iteration1.dat"
+s:Ge/Nuc/Voxel/Material             = "G4_WATER"
+b:Ge/Nuc/ShowDNAVoxels              = "False"
+s:Ge/Nuc/ChromatinFiber/Material    = "G4_WATER"
+b:Ge/Nuc/ShowChromatinCylinders     = "False"
+s:Ge/Nuc/Histone/Material           = "G4_HistoneMaterial"
+b:Ge/Nuc/OnlyBuildOneHistone        = "False"
+b:Ge/Nuc/HistoneAsScavenger         = "True"
+b:Ge/Nuc/AddBases                   = "True"
+s:Ge/Nuc/Base1/Material             = "G4_BaseMaterial"
+s:Ge/Nuc/Base2/Material             = "G4_BaseMaterial"
+b:Ge/Nuc/AddBackbones               = "True"
+s:Ge/Nuc/Backbone1/Material         = "G4_BackboneMaterial"
+s:Ge/Nuc/Backbone2/Material         = "G4_BackboneMaterial"
+b:Ge/Nuc/AddHydrationShell          = "False"
+s:Ge/Nuc/HydrationShell1/Material   = "G4_WATER_MODIFIED"
+s:Ge/Nuc/HydrationShell2/Material   = "G4_WATER_MODIFIED"
+
+# === Nucleus Rotation === 
+d:Ge/Nucleus/RotX = 174.0 deg
+d:Ge/Nucleus/RotY = -6.0 deg
+d:Ge/Nucleus/RotZ = -40.0 deg
+
+# === Materials ===
+s:Ma/G4_HistoneMaterial/CloneFromMaterial   = "G4_WATER"
+d:Ma/G4_HistoneMaterial/CloneWithDensity    = 1.407 g/cm3
+s:Ma/G4_BaseMaterial/CloneFromMaterial      = "G4_WATER"
+d:Ma/G4_BaseMaterial/CloneWithDensity       = 1.0 g/cm3
+s:Ma/G4_BackboneMaterial/CloneFromMaterial  = "G4_WATER"
+d:Ma/G4_BackboneMaterial/CloneWithDensity   = 1.0 g/cm3
+s:Ma/G4_WATER_MODIFIED/CloneFromMaterial    = "G4_WATER"
+d:Ma/G4_WATER_MODIFIED/CloneWithDensity     = 1.0 g/cm3
+
+# === Physics and Chemistry ===
+sv:Ph/Default/Modules 					= 2 "TsEmDNAPhysics" "TsEmDNAChemistry"
+includeFile 						= ../../supportFiles/TOPASChemistry.txt
+s:Ch/ChemistryName 					= "TOPASChemistry" 
+b:Ch/TOPASChemistry/ChemicalStageTransportActive     	= "True"
+d:Ch/TOPASChemistry/ChemicalStageTimeEnd             	= 1.0 ns 
+dv:Ch/TOPASChemistry/ChemicalStageTimeStep           	= 2 10.0 1000.0 ps 
+dv:Ch/TOPASChemistry/ChemicalStageTimeStepResolution 	= 2 0.1 1.0 ps 
+i:Ph/Verbosity 						= 0
+
+# === BeamSource ===
+s:So/MySource/Type 				= "Beam"
+s:So/MySource/Component 			= "BeamPosition"
+s:So/MySource/BeamPositionCutoffShape 		= "Ellipse" 
+u:So/MySource/BeamEnergySpread 			= 0.0
+s:So/MySource/BeamPositionDistribution 		= "Flat"
+s:So/MySource/BeamAngularDistribution 		= "None"
+d:So/MySource/BeamPositionCutoffX 		= 4.65 um
+d:So/MySource/BeamPositionCutoffY 		= 4.65 um
+d:Ge/MySource/TransZ                            = 5.00 um
+
+# === Irradiation === 
+s:So/MySource/BeamParticle = "proton"
+d:So/MySource/BeamEnergy = 1.0 MeV
+i:So/MySource/NumberOfHistoriesInRun = 14
+
+# === DoseScorer ===
+s:Sc/DoseScorer/Quantity 			= "DoseToMedium" 	
+s:Sc/DoseScorer/Component 			= "Nuc"											b:Sc/DoseScorer/OutputToConsole 		= "True" 										
+s:Sc/DoseScorer/IfOutputFileAlreadyExists 	= "Increment"	
+b:Sc/DoseScorer/OutputAfterRun 			= "True"
+b:Sc/DoseScorer/PropagateToChildren 		= "True"
+
+# === NucleusScorer ===
+s:Sc/DNAScorer/Quantity                                 = "NucleusDNADamage"
+s:Sc/DNAScorer/Component                                = "Nuc"
+b:Sc/DNAScorer/PropagateToChildren                      = "True"
+s:Sc/DNAScorer/OutputType                               = "root"
+s:Sc/DNAScorer/IfOutputFileAlreadyExists                = "Increment"
+b:Sc/DNAScorer/WriteCSVOutputWithAllDamageSpecification = "True"
+b:Sc/DNAScorer/MinimalSDDOutput                         = "False"
+b:Sc/DNAScorer/IncludeDSBDamageSitesOnlyinSDD           = "True"
+i:Sc/DNAScorer/DSBSeparation                            = 10
+d:Sc/DNAScorer/DamageThreshold                          = 17.5 eV
+u:Sc/DNAScorer/ProbabilityForOHToCauseDamage            = 0.4
+#b:Sc/DNAScorer/UseLinearProbabilityThreshold           = "false"
+#d:Sc/DNAScorer/LinearProbability_lower_limit           = 5 eV
+#d:Sc/DNAScorer/LinearProbability_upper_limit           = 37.5 eV
+b:Sc/DNAScorer/ExcludeShortFragment                     = "False"
+i:Sc/DNAScorer/LowerFragmentDetectionThreshold          = 250
+i:Sc/DNAScorer/UpperFragmentDetectionThreshold          = 300000000
+b:Sc/DNAScorer/ScoreDirectDamages                       = "True"
+b:Sc/DNAScorer/ScoreIndirectDamages                     = "True"
+d:Sc/DNAScorer/ScoringRadius                            = Ge/Nuc/NucleusRadius um
+b:Sc/DNAScorer/HistoneAsScavenger                       = Ge/Nuc/HistoneAsScavenger
+d:Sc/DNAScorer/DosePerExposure                          = 1 Gy
+i:Sc/DNAScorer/BasePairPositionAtGeometricHierarchy     = 0
+d:Sc/DNAScorer/MeanEnergy = So/MySource/BeamEnergy MeV
+i:Sc/DNAScorer/NumberOfHistoriesInRun = So/MySource/NumberOfHistoriesInRun
+s:Sc/DNAScorer/PrimaryParticle = So/MySource/BeamParticle
+s:Sc/RootFileName = Sc/DNAScorer/OutputFile
+
+# === Materials to score ===
+sv:Sc/DNAScorer/Strand1MaterialNames                    = 4 "G4_WATER_MODIFIED" "G4_BackboneMaterial" "G4_BaseMaterial" "G4_HistoneMaterial"
+sv:Sc/DNAScorer/Strand2MaterialNames                    = 4 "G4_WATER_MODIFIED" "G4_BackboneMaterial" "G4_BaseMaterial" "G4_HistoneMaterial"
+# Info about nucleus geometry for scorer
+s:Sc/DNAScorer/GeometryInfo                            = "../../supportFiles/Geoinfo.txt"
+s:Sc/DNAScorer/CopyNoTable                             = "../../supportFiles/CopyNoTable.txt"
+s:Sc/DNAScorer/signedCHVoxel                           = "../../supportFiles/signedCHVoxel.txt"
+
+# === SDD header ===
+s:Sc/DNAScorer/AuthorName				= "Name"
+s:Sc/DNAScorer/SimulationDetails			= "Whole nucleus irradiation" 
+s:Sc/DNAScorer/SourceDetails				= "Monoenergetic source"
+i:Sc/DNAScorer/SourceType				= 1
+s:Sc/DNAScorer/EnergyDistribution			= "M, 0"
+s:Sc/DNAScorer/IrradiationTarget			= "Nucleus"
+s:Sc/DNAScorer/CellCycleStage				= "0"
+s:Sc/DNAScorer/DNAStructure				= "0, 1"
+i:Sc/DNAScorer/InVitroOrInVivo				= 0
+s:Sc/DNAScorer/ProliferationStatus			= "1"
+s:Sc/DNAScorer/Microenvironment				= "20, 0.01"
+d:Sc/DNAScorer/Time					= 1 ns 
+s:Sc/DNAScorer/AdditionalInfo				= ""
+
+# === TupleScorer ===
+d:Sc/pTuple/TimeCut 			= 1.0 ns
+b:Sc/pTuple/IncludeChemicalTrack 	= "False"
+s:Sc/pTuple/Quantity 			= "Tuple"
+s:Sc/pTuple/Component 			= "Nuc"
+s:Sc/pTuple/OutputType 			= "ASCII"
+b:Sc/pTuple/OutputToConsole 		= "True"
+s:Sc/pTuple/IfOutputFileAlreadyExists 	= "Increment"
+b:Sc/pTuple/OutputAfterRun 		= "True"
+b:Sc/pTuple/IncludeVolumeName		= "True"
+b:Sc/pTuple/IncludeVolumeCopyNumber	= "True"
+b:Sc/pTuple/IncludeEventID 		= "True"
+b:Sc/pTuple/IncludeEnergyDeposited 	= "True"
+b:Sc/pTuple/IncludePhysicalProcessName 	= "True"
+b:Sc/pTuple/PropagateToChildren		= "True"
+
+# === Output Files === 
+s:Sc/DNAScorer/OutputFile = "DNADamageFileName"
+s:Sc/DoseScorer/OutputFile = "DoseFileName"
+s:Sc/pTuple/OutputFile = "TupleFileName"
