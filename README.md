@@ -1,20 +1,22 @@
 # DamageModelComparison
 
-TOPAS-nBio 1.0 (TOPAS 3.6.1) parameter files, MATLAB R2023a codes and Medras references that have been used to simulate Monte Carlo models of radiation-induced Double Strand Break (DSB) damage (Schuemann et al 2019a). This was completed in the Standard DNA Damage (SDD) data format to be used in combination with the Medras biological response model (McMahon and Prise 2021), to predict the yields of lethal chromosome aberrations. Damage models were designed with various levels of detail, to investigate the impact of DSB yield. Models are listed by reducing levels of simulation detail investigating the inclusion of chemical interactions, realistic nuclear geometry, single strand break damage and track structure. Each damage model underwent the same repair modelling to determine any impact on chromosome aberration yields.
+TOPAS-nBio 1.0 (TOPAS 3.6.1) and Medras (verison 15/08/2023) parameter files and references (Schuemann et al 2019a, McMahon and Prise 2021), alongside additional MATLAB (R2023a) and Python analysis codes. These simulation toolkits and additional codes have been used to model radiation-induced Double Strand Break (DSB) damage in a nuclear volume. This was completed in the Standard DNA Damage (SDD) data format (Schuemann et al 2019b). DSB damage outputs were imported into the Medras biological response model to predict the yields of lethal chromosome aberrations. 
+
+Damage models were designed with various levels of detail to investigate the impact of model design on the initial DSB damage and the formation of lethal aberrations. Models are listed by reducing levels of simulation detail investigating the inclusion of chemical interactions, realistic nuclear geometry, single strand break damage and track structure. 
 
 *ChemistryModel.txt*
 
 Simulates chemistry, full nuclear geometry, single strand break damage and track structure.
-This TOPAS-nBio parameter file simulates the physical and chemical irradiation of a human fibroblast nucleus (Zhu et al 2020). Default direct and indirect SB damage, and scavenging parameters are specified but can be updated alongside the exposure conditions.
+This TOPAS-nBio parameter file simulates the physical and chemical interactions during the irradiation of a human fibroblast nucleus (Zhu et al 2020). Default direct and indirect SB damage, and scavenging parameters are specified but can be updated alongside the exposure conditions.
 
 *PhysicsOnlyModel.txt*
 
 Simulates full nuclear geometry, single strand break damage and track structure.
 Same as the ChemistryModel.txt but with the simulation of chemical interactions removed and the direct damage parameter updated.
 
-*Support Files*
+*Support Files for Chemistry and Physics Only models*
 
-Contain nuclear geometry and chemistry information to be read in by "ChemistryModel.txt" and "PhysicsOnlyModel.txt". Support files are sourced and available from TOPAS-nBio (Schuemann et al 2019b, [1]).
+The "ChemistryModel.txt" and "PhysicsOnlyModel.txt read in support files containing the nuclear geometry and chemistry. Support files are sourced and available from TOPAS-nBio (Schuemann et al 2019b, [1]).
 
 *SimpleDNAModel.m*
 
@@ -26,27 +28,27 @@ This MATLAB file reads in tuple scoring of physical interaction information from
 Simulates track structure.
 This MATLAB file reads in tuple scoring of physical interaction information from "ChemistryModel.txt" or "PhysicsOnlyModel.txt". 
 
-*MedrasDamageModel*
+*Medras Damage Model*
 
-This is the most simple damage used and is available and detailed elsewhere (McMahon and Prise 2021, [2])
+This is the most simple damage model used and is available and detailed elsewhere (McMahon and Prise 2021, [2])
 
 *chromModel.py*
 
 Sourced from [2], this assigns chromosome positions to the DSB damage site in the Simple DNA, Initial DSB and Medras models for repair simulation.
 
-*Convert_to_SDD*
+*Convert_to_SDD.py*
 
 Converts the Simple DNA and Initial DSB damage models DSB outputs to SDD format and assigns chromosome positions using "chromModel.py".
 
-*MedrasRepairModel*
+*Medras Repair Model*
 
-This model is available and detailed elsewhere (McMahon and Prise 2021, [2]). It inputs the SDD data files and simulates repair and response, giving misrepair rates and yields of aberrations.
+This model is available and detailed elsewhere (McMahon and Prise 2021, [2]). The SDD files from each damage model were input into Medras, simulating the repair and biological response to DSB damage, outputting misrepair rates and yields of aberrations.
 
 # Contact
 For any questions or problems regarding the codes, please contact sthompson@qub.ac.uk.
 
 # References and links
-[1] https://github.com/topas-nbio
+[1] https://github.com/topas-nbio/TOPAS-nBio/tree/master/examples/geometry/nucleusModel/supportFiles
 
 [2] https://github.com/sjmcmahon/Medras-MC
 
